@@ -17,20 +17,13 @@ def check_retetion():
         print("user:",u.user_tweets.user_id)
     #for each user check the last tweet from the user
     for item in users:
-
-        #points = PointsGiven.select(PointsGiven.user_who_received_point,Tweet.created_date).where(PointsGiven.user_who_received_point == Tweet.user_tweets )
         points = (Tweet.select().where(Tweet.user_tweets == item).order_by(Tweet.user_tweets))
         #print("now",datetime.datetime.now())
         for itemx in points:
-            #dates.append(item.created_date)
-            #print(item,"", itemx.created_date)
             # more than 24 hours passed
             if (datetime.datetime.now() - itemx.created_date) > datetime.timedelta(1):
 
                 print("more than 24 hours have passed: ", itemx.user_tweets.user_id)
-                #add a row to the pointsgivent table with a -0.25 point
-                #PointsGiven.create(user_who_gave_point = item['user_who_gave_point'],user_who_received_point =item['user_who_received_point'],tweet_with_answer = item['tweet_with_answer'],point = item['point'] )
-                #let know the user each day the number of points that he has lost, maybe a private message(dont' know if the user has to follow the bot)???
                 break
             dates [itemx.user_tweets.user_id] = itemx.created_date
 
