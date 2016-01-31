@@ -1,7 +1,7 @@
 
 import shlex
 from time import gmtime, strftime
-from leaderboard import *
+from get_leaderboard import *
 
 
 def authenticate(ck,cs,at,atc):
