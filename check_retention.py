@@ -40,7 +40,7 @@ def check_retetion(api,user):
         points = (Tweet.select().where(Tweet.user_tweets == item).order_by(Tweet.user_tweets))
         for itemx in points:
             # more than 24 hours passed
-            if (datetime.datetime.now() - itemx.created_date) < datetime.timedelta(1):
+            if (datetime.datetime.now() - itemx.created_date) > datetime.timedelta(1):
 
                 print("more than 24 hours have passed: ", itemx.user_tweets.user_id)
                 #add a row to the pointsgivent table with a -0.25 point

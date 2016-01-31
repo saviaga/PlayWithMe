@@ -52,17 +52,7 @@ def prepareDataIncomingMessage(status):
     screen_name=screen_name.lower()
     message=status.text
     user_id = status.user.id
-
-    #3239553085
     idTweet=status.id_str
-    #get the people mentioned in the tweet and adds the @ symbol
-   # names=getPeopleMentionedTweet(message)
-    #names["@"+screen_name]=0
-    #print ("ScreenNameEE:"+screen_name)
-    #print ("Message:"+message)
-
-    #hashNames=getHashNames(names)
-    #return date,status,screen_name,message,idTweet,names,hashNames
     return date,status,screen_name,message,idTweet, user_id
 
 def clean_to_save( woman_reason):
@@ -200,23 +190,9 @@ def getPeopleMentionedTweet(message,user_id,idTweet):
                     print("saved to db")
 
     db.close()
-       #REPLIES WITH ++ OR --
-#the reply is the name of the bot,the name of th user and ++ or --
-
-
-    #ANALIZE IF THE ANSWER HAS A ++ THEN UPDATE THE TABLE WITH THE USER POINT#
-    # Updates the user info table with the point given
-
-     #   '''
-     # Table: Points Given
-     # ID USER | ID_TWEET | POINT GIVEN | DATE OF POINT GIVEN
-
-     #   '''
-
     return names
 
 
-#override tweepy.StreamListener to add logic to on_status
 class StdOutListener(tweepy.StreamListener):
 
 
