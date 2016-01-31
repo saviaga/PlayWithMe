@@ -114,14 +114,6 @@ def get_leaderboard(api,user_id):
     #print(message)
     message = who_asked + " Leaderboard: " +  message
     api.update_status(status=str(message))
-        # Display the sorted keys.
-
-            #print("user: ",p.user_who_received_point.user_id)
-            #print("point: ",p.point)
-
-        #una vez listado el usuario y su punto se debe de sumarizar los puntos por usuario y mostrar la respuesta de mayor a menor
-
-
 
 
 def check_if_user_exists(user_id,api):
