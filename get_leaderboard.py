@@ -3,7 +3,42 @@ from peewee import *
 from create_retention_database import User,Tweet, PointsGiven, AnswerTweets
 import operator
 import datetime
+def check_retetion():
+    users = []
+    dates = {}
+    #THIS FUCTION MUST RUN EVERY 24 HOURS AT THE SAME TIME EVERY DAY
+    print("Checking user's retention")
+    #from the tweets table make a select distinct to filters ids of users without repeating ids
+    Point = Tweet.select(Tweet.user_tweets).distinct().order_by(Tweet.user_tweets)
 
+
+    for u in Point:
+        users.append( u.user_tweets.user_id)
+        print("user:",u.user_tweets.user_id)
+    #for each user check the last tweet from the user
+    for item in users:
+
+        #points = PointsGiven.select(PointsGiven.user_who_received_point,Tweet.created_date).where(PointsGiven.user_who_received_point == Tweet.user_tweets )
+        points = (Tweet.select().where(Tweet.user_tweets == item).order_by(Tweet.user_tweets))
+        #print("now",datetime.datetime.now())
+        for itemx in points:
+            #dates.append(item.created_date)
+            #print(item,"", itemx.created_date)
+            # more than 24 hours passed
+            if (datetime.datetime.now() - itemx.created_date) > datetime.timedelta(1):
+
+                print("more than 24 hours have passed: ", itemx.user_tweets.user_id)
+                #add a row to the pointsgivent table with a -0.25 point
+                #PointsGiven.create(user_who_gave_point = item['user_who_gave_point'],user_who_received_point =item['user_who_received_point'],tweet_with_answer = item['tweet_with_answer'],point = item['point'] )
+                #let know the user each day the number of points that he has lost, maybe a private message(dont' know if the user has to follow the bot)???
+                break
+            dates [itemx.user_tweets.user_id] = itemx.created_date
+
+
+
+
+
+            #CHECK IF THE LEADERBOARD CAN REST NON COMPLEATE NUMBERS (FLOAT NUMBERS)
 
 def count_points_user(api,user):
     print("user: ",user[1:])
@@ -13,8 +48,12 @@ def count_points_user(api,user):
     points = PointsGiven.select(PointsGiven.point,PointsGiven.user_who_received_point).where(PointsGiven.user_who_received_point == user_id.id )
     sq = PointsGiven.select()
     tweetspositive = sq.where((PointsGiven.user_who_received_point ==  user_id.id ) & (PointsGiven.point == 1) )
+    tweetsanswer = sq.where((PointsGiven.user_who_received_point ==  user_id.id ) & (PointsGiven.point == 2) )
+    answer_points = (tweetsanswer.count())* 2
     tweetsnegative = sq.where((PointsGiven.user_who_received_point ==  user_id.id ) & (PointsGiven.point == -1) )
-    totalpoints = tweetspositive.count() - tweetsnegative.count()
+    quarterpoint = sq.where((PointsGiven.user_who_received_point ==  user_id.id ) & (PointsGiven.point == -0.25) )
+    quarterpoint = (quarterpoint.count())*0.25
+    totalpoints = (tweetspositive.count() + answer_points ) - (tweetsnegative.count()) - quarterpoint
     print("total points: ", totalpoints)
     return totalpoints
 
@@ -48,7 +87,12 @@ def get_leaderboard(api,user_id):
         tweetsnegative = sq.where((PointsGiven.user_who_received_point == item) & (PointsGiven.point == -1) )
         print("count neg is: ",tweetsnegative.count())
         print("user is:", item)
-        totalpoints = (tweetspositive.count() + answer_points) - tweetsnegative.count()
+
+        quarterpoint = sq.where((PointsGiven.user_who_received_point ==  item ) & (PointsGiven.point == -0.25) )
+        quarterpoint = (quarterpoint.count())*0.25
+        print("quarter is: ",)
+        print("user is:", item)
+        totalpoints = (tweetspositive.count() + answer_points ) - (tweetsnegative.count()) - quarterpoint
         leaderboard[item] = totalpoints
     sorted_dic = [(k,v) for v,k in sorted(
                [(v,k) for k,v in leaderboard.items()],reverse=True
@@ -85,7 +129,7 @@ def check_if_user_exists(user_id,api):
     query = User.select().where(User.user_id == user_id)
     if query.exists():
         # A user named "charlie" exists.
-        print("Cool..")
+        print("Cool user exists..")
     else:
         print("user does not exists")
         userid = api.get_user(user_id)
@@ -97,3 +141,4 @@ def check_if_user_exists(user_id,api):
 
 
 
+check_retetion()
